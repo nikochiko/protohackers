@@ -21,3 +21,7 @@ cabal.project.local
 cabal.project.local~
 .HTF/
 .ghc.environment.*
+
+# store compiled files with .exe extension so that they can
+# be gitignored
+*.exe

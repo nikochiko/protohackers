@@ -1,2 +1,3 @@
 Echo: Echo.hs
-	stack ghc -- Echo.hs -o Echo
+	stack ghc -- Echo.hs -o Echo.exe
+
