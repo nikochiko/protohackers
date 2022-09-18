@@ -16,7 +16,7 @@ import Prime (isPrime)
 
 data Request = Request {
       method :: String
-    , number :: Integer
+    , number :: Double
     } deriving (Generic, Show)
 
 instance ToJSON Request where
@@ -58,8 +58,6 @@ runConn (sock, addr) = do
     hdl <- socketToHandle sock ReadWriteMode
     hSetBuffering hdl NoBuffering
     serveWithHandle hdl
-    putStrLn $ "closing sock for " ++ show addr
-    close sock
 
 serveWithHandle :: Handle -> IO ()
 serveWithHandle hdl = loop where
@@ -69,13 +67,15 @@ serveWithHandle hdl = loop where
         let response = getResponse mrequest
         hPutStrLn hdl $ SL.toString $ encode response
         if response == malformedResponse
-           then return ()
+           then hClose hdl
            else loop
 
 getResponse :: Maybe Request -> Response
 getResponse Nothing = malformedResponse
-getResponse (Just (Request { method = "isPrime", number = n })) = Response {method = "isPrime", prime = isPrime n }
-getResponse (Just request) = malformedResponse
+getResponse (Just (Request { method = "isPrime", number = n }))
+  | ceiling n == floor n = Response { method = "isPrime", prime = isPrime (ceiling n) }
+  | otherwise = malformedResponse
+getResponse _ = malformedResponse
 
 malformedResponse :: Response
 malformedResponse = Response {method = "notIsPrime", prime = False}
