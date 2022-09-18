@@ -39,6 +39,8 @@ main = do
     let hostAddr = tupleToHostAddress (0, 0, 0, 0)
     port <- getPort
 
+    sock <- socket AF_INET Stream defaultProtocol
+    bind sock $ SockAddrInet port hostAddr
     listen sock 5
     putStrLn $ "Listening on " ++ show hostAddr ++ ":" ++ show port
 
